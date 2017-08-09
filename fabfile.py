@@ -3,9 +3,6 @@ from io import BytesIO
 
 CHEF_DIR = "/etc/chef"
 
-env.user = 'ubuntu'
-
-
 @task
 def read_remote_file(file_path: str):
     fd = BytesIO()
