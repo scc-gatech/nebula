@@ -6,10 +6,15 @@ Service to manage bootstrap and convergence of hosts.
 
 ## CLI Usage
 
+### Install Packages
+
+ - Install a python 3 enviornment (e.g., miniconda3)
+ - `pip install fabric3`
+
 ### Bootstrap
 `fab init_chef_zero:https://{username}:{token}@github.com/scc-gatech/chef.git -u {ubuntu,cyclecloud} -h {comma_separated_list}`
 
-Note: 
+Note:
  - `username`: GitHub username
  - `token`: Personal access token created from [here](https://github.com/settings/tokens). Make sure `repos` is ticked.
  - `-u {ubuntu, cyclecloud}`: Depends on which service you're using. This can be any user that have passwordless sudo access.
@@ -17,7 +22,7 @@ Note:
 
 
 ### Converge
-`fab converge`
+`fab converge [-h {hosts}]`
 
 ### Change branch/role
-`fab set_chef_{branch,role}:{value}`
+`fab set_chef_{branch,role}:{value} [-h {hosts}]`
