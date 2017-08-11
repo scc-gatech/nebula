@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { HostInfo } from '../models/Host';
 import * as moment from 'moment';
-import { Button } from '@blueprintjs/core';
+import { Button, Spinner } from '@blueprintjs/core';
 import { RouterChildContext } from 'react-router';
 
 import * as firebase from 'firebase/app';
@@ -37,6 +37,9 @@ export class HostsList extends React.Component<{}, HostsListProps> {
   }
 
   render() {
+    if (this.state.hosts.length === 0) {
+      return <Spinner />;
+    }
     return (
       <table className="pt-table pt-striped pt-interactive">
         <thead>
