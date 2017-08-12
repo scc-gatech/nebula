@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   BrowserRouter as Router,
   Route,
+  Redirect,
 } from 'react-router-dom';
 import {
   Button,
@@ -14,7 +15,7 @@ import {
 import { object } from 'prop-types';
 import Lodable from 'react-loadable';
 import { Navbar } from './components/Navbar';
-import { RouteComponentProps, RouterChildContext } from 'react-router';
+import { RouteComponentProps, RouterChildContext, Switch } from 'react-router';
 import { PageLoadingComponent } from './components/PageLoadingComponent';
 import { ConvergeModal } from './components/ConvergeModal';
 import { observer } from 'mobx-react';
@@ -45,6 +46,8 @@ const AsyncHosts = Lodable({
   loading: PageLoadingComponent,
 });
 
+AsyncHosts.preload();
+
 interface SelectedTab {
   selected: string;
 }
@@ -62,6 +65,7 @@ class TabsDispatch extends React.Component<SelectedTab, {}> {
         id="tab-selection-panel"
         vertical={true}
         renderActiveTabPanelOnly={true}
+        defaultSelectedTabId="hosts"
         selectedTabId={this.props.selected}
         onChange={
           (activeTabId: string) =>
@@ -94,19 +98,21 @@ export class MainApp extends React.Component<{}, {}> {
             <button className="pt-button pt-minimal pt-icon-notifications"/>
             <button className="pt-button pt-minimal pt-icon-cog"/>
           </Navbar>
-          <Route
-            exact={true}
-            path="/"
-            render={() => <TabsDispatch selected={'hosts'}/>}
-          />
-          <Route
-            path="/:tabId"
-            render={
-              (props: RouteComponentProps<{ tabId: string }>) =>
-                <TabsDispatch
-                  selected={props.match.params.tabId}
-                />}
-          />
+          <Switch>
+            <Route
+              exact={true}
+              path="/"
+              render={() => <Redirect to="/hosts" />}
+            />
+            <Route
+              path="/:tabId"
+              render={
+                (props: RouteComponentProps<{ tabId: string }>) =>
+                  <TabsDispatch
+                    selected={props.match.params.tabId}
+                  />}
+            />
+          </Switch>
           <div>
             <ConvergeModal/>
           </div>

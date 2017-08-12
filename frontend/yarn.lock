@@ -25,7 +25,7 @@
     react-day-picker "^5.3.0"
     tslib "^1.5.0"
 
-"@blueprintjs/labs@^0.5.0":
+"@blueprintjs/labs@0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@blueprintjs/labs/-/labs-0.5.0.tgz#2acd5bb1624e311374e1a81b4717aabe1a15f404"
   dependencies:
@@ -2410,6 +2410,10 @@ interpret@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.0.3.tgz#cbc35c62eeee73f19ab7b10a801511401afc0f90"
 
+intersection-observer@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/intersection-observer/-/intersection-observer-0.4.0.tgz#e7c3580be96fc1698170250b500da986c59824fb"
+
 invariant@^2.2.0, invariant@^2.2.1, invariant@^2.2.2:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.2.tgz#9e1f56ac0acdb6bf303306f338be3b204ae60360"
@@ -4397,6 +4401,10 @@ react-error-overlay@^1.0.6:
     react-dev-utils "^3.1.0"
     settle-promise "1.0.0"
     source-map "0.5.6"
+
+react-loadable-visibility@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-loadable-visibility/-/react-loadable-visibility-2.3.0.tgz#2c39cc7e14f17969a130d1c4cd4bcf574d84f15e"
 
 react-loadable@^4.0.4:
   version "4.0.4"
