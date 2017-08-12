@@ -1,5 +1,4 @@
 import * as React from 'react';
-import './App.css';
 import {
   BrowserRouter as Router,
   Route,
@@ -10,7 +9,7 @@ import {
   MenuItem,
   MenuDivider,
   Popover,
-  Position, Tab2, Tabs2, NonIdealState, Classes, Spinner,
+  Position, Tab2, Tabs2,
 } from '@blueprintjs/core';
 import { object } from 'prop-types';
 import Lodable from 'react-loadable';
@@ -19,7 +18,6 @@ import { Redirect, RouteComponentProps, RouterChildContext } from 'react-router'
 import { PageLoadingComponent } from './components/PageLoadingComponent';
 import { ConvergeModal } from './components/ConvergeModal';
 import { observer } from 'mobx-react';
-import * as firebase from 'firebase';
 
 const menu = (
   <Menu>
@@ -81,62 +79,8 @@ class TabsDispatch extends React.Component<SelectedTab, {}> {
 }
 
 @observer
-class App extends React.Component<{}, { hasUser: boolean, userInfoFetched: boolean }> {
-
-  constructor() {
-    super();
-    this.state = {
-      userInfoFetched: false,
-      hasUser: false,
-    };
-  }
-
-  componentDidMount() {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        this.setState({userInfoFetched: true, hasUser: true});
-      } else {
-        this.setState({userInfoFetched: true, hasUser: false});
-      }
-    });
-  }
-
+export class MainApp extends React.Component<{}, {}> {
   render() {
-    if (!this.state.userInfoFetched) {
-      return (
-        <div className="App">
-          <Spinner className="initial-spinner"/>
-        </div>
-      );
-    }
-    if (!this.state.hasUser) {
-      return (
-        <div className="App">
-          <NonIdealState
-            className="login-required"
-            title="Login Required"
-            visual="error"
-            description="You must login with GitHub to use Nebula."
-          />
-          <Button
-            iconName="user"
-            className={Classes.LARGE}
-            onClick={() => {
-              let provider = new firebase.auth.GithubAuthProvider();
-              provider.addScope('repo user read:public_key');
-              provider.setCustomParameters({
-                'allow_signup': 'false',
-              });
-              firebase.auth().signInWithPopup(provider).then(
-                () => this.setState({hasUser: true}),
-              );
-            }}
-          >
-            Login
-          </Button>
-        </div>
-      );
-    }
     return (
       <Router>
         <div className="App">
@@ -168,4 +112,4 @@ class App extends React.Component<{}, { hasUser: boolean, userInfoFetched: boole
   }
 }
 
-export default App;
+export default MainApp;
