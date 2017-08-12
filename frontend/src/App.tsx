@@ -10,11 +10,15 @@ import {
   MenuItem,
   MenuDivider,
   Popover,
-  Position, Tab2, Tabs2
+  Position, Tab2, Tabs2,
 } from '@blueprintjs/core';
+import { object } from 'prop-types';
+import Lodable from 'react-loadable';
 import { Navbar } from './components/Navbar';
 import { Redirect, RouteComponentProps, RouterChildContext } from 'react-router';
-import { Hosts } from './pages/Hosts';
+import { PageLoadingComponent } from './components/PageLoadingComponent';
+import { ConvergeModal } from './components/ConvergeModal';
+import { observer } from 'mobx-react';
 
 const menu = (
   <Menu>
@@ -37,13 +41,18 @@ const TheComponent = () => (
   </div>
 );
 
+const AsyncHosts = Lodable({
+  loader: () => import('./pages/Hosts'),
+  loading: PageLoadingComponent,
+});
+
 interface SelectedTab {
   selected: string;
 }
 
 class TabsDispatch extends React.Component<SelectedTab, {}> {
   static contextTypes = {
-    router: React.PropTypes.object
+    router: object,
   };
 
   context: RouterChildContext<{}>;
@@ -60,15 +69,17 @@ class TabsDispatch extends React.Component<SelectedTab, {}> {
             this.context.router.history.push(`/${activeTabId}`)
         }
       >
-        <Tab2 id="hosts" title="Hosts" panel={<Hosts/>}/>
+        <Tab2 id="hosts" title="Hosts" panel={<AsyncHosts/>}/>
         <Tab2 id="roles" title="Roles" panel={<TheComponent/>}/>
         <Tab2 id="jobs" title="Jobs" panel={<TheComponent/>}/>
+        <Tab2 id="oneoffs" title="One-offs" panel={<TheComponent/>}/>
         <Tabs2.Expander/>
       </Tabs2>
     );
   }
 }
 
+@observer
 class App extends React.Component<{}, {}> {
   render() {
     return (
@@ -93,6 +104,9 @@ class App extends React.Component<{}, {}> {
                   selected={props.match.params.tabId}
                 />}
           />
+          <div>
+            <ConvergeModal />
+          </div>
         </div>
       </Router>
     );

@@ -3,43 +3,53 @@ import { HostInfo } from '../models/Host';
 import * as moment from 'moment';
 import { Button, Spinner } from '@blueprintjs/core';
 import { RouterChildContext } from 'react-router';
+import { object } from 'prop-types';
 
 import * as firebase from 'firebase/app';
 import DataSnapshot = firebase.database.DataSnapshot;
 import Reference = firebase.database.Reference;
+import { appState } from '../stores/index';
+import { runInAction } from 'mobx';
 
-interface HostsListProps {
-  hosts: Array<HostInfo>;
-}
-
-export class HostsList extends React.Component<{}, HostsListProps> {
-
+class HostRow extends React.PureComponent<{ host: HostInfo }, {}> {
   static contextTypes = {
-    router: React.PropTypes.object
+    router: object,
   };
-  ref: Reference;
   context: RouterChildContext<{}>;
 
-  constructor(props: {}) {
-    super(props);
-    this.state = {hosts: []};
+  viewHostDetail = (event: React.MouseEvent<HTMLElement>) => {
+    this.context.router.history.push(`/hosts/${this.props.host.hostname}`);
+    event.stopPropagation();
   }
 
-  componentWillMount() {
-    this.ref = firebase.database().ref('hosts');
-    this.ref.on('value', (snap: DataSnapshot) => {
-      this.setState({hosts: snap.val()});
+  convergeHost = (event: React.MouseEvent<HTMLElement>) => {
+    runInAction('set target host and open modal', () => {
+      appState.convergeModal.targetBranch = this.props.host.chefBranch;
+      appState.convergeModal.targetHost = this.props.host;
+      appState.convergeModal.open = true;
     });
-  }
-
-  componentWillUnmount() {
-    this.ref.off('value');
+    event.stopPropagation();
   }
 
   render() {
-    if (this.state.hosts.length === 0) {
-      return <Spinner />;
-    }
+    let host = this.props.host;
+    return (
+      <tr
+        onClick={this.viewHostDetail}
+      >
+        <td>{host.hostname}</td>
+        <td>{host.role}</td>
+        <td>{host.chefBranch}</td>
+        <td>{host.chefSha ? host.chefSha.slice(0, 6) : 'uninitialized'}</td>
+        <td>{moment(host.lastConverged).format('MMMM Do YYYY, h:mm:ss a')}</td>
+        <td className="converge-col"><Button iconName="git-merge" onClick={this.convergeHost}/></td>
+      </tr>
+    );
+  }
+}
+
+export class HostTable extends React.Component<{ hosts: Array<HostInfo> }, {}> {
+  render() {
     return (
       <table className="pt-table pt-striped pt-interactive">
         <thead>
@@ -50,29 +60,42 @@ export class HostsList extends React.Component<{}, HostsListProps> {
           <th>Chef SHA</th>
           <th>Last Converged</th>
           <th>Converge</th>
-          <th>Detail</th>
         </tr>
         </thead>
         <tbody>
-        {
-          this.state.hosts.map((host: HostInfo, i: number) => (
-            <tr
-              key={i}
-              onClick={() => this.context.router.history.push(`/hosts/${host.hostname}`)}
-            >
-              <td>{host.hostname}</td>
-              <td>{host.role}</td>
-              <td>{host.chefBranch}</td>
-              <td>{host.chefSha ? host.chefSha.slice(0, 6) : 'uninitialized'}</td>
-              <td>{moment(host.lastConverged).format('MMMM Do YYYY, h:mm:ss a')}</td>
-              <td><Button iconName="git-merge"/></td>
-              <td><Button iconName="list-detail-view"/></td>
-            </tr>
-          ))
-        }
+        {this.props.hosts.map((host: HostInfo, i: number) => <HostRow key={i} host={host}/>)}
         </tbody>
       </table>
     );
+  }
+}
+
+export class HostsList extends React.Component<{}, { hosts: Array<HostInfo> }> {
+  ref: Reference;
+
+  constructor(props: {}) {
+    super(props);
+    this.state = {hosts: []};
+  }
+
+  componentWillMount() {
+    this.ref = firebase.database().ref('hosts');
+    this.ref.on('value', (snap: DataSnapshot) => {
+      this.setState({
+        hosts: Object.values(snap.val())
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    this.ref.off('value');
+  }
+
+  render() {
+    if (this.state.hosts.length === 0) {
+      return <Spinner/>;
+    }
+    return <HostTable hosts={this.state.hosts}/>;
   }
 }
 
