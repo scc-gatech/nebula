@@ -1,7 +1,8 @@
 export interface HostInfo {
   hostname: string;
-  role: string;
+  chefRole: string;
   chefBranch: string;
   chefSha: string;
   lastConverged: number;
+  chefStatus: string;
 }

@@ -10,10 +10,12 @@
 .pt-navbar {
   margin-bottom: 50px;
 }
+
 .pt-tabs {
-    width: 100%;
-    position: relative;
+  width: 100%;
+  position: relative;
 }
+
 .pt-tab-panel {
   margin-left: auto;
   margin-right: auto;
@@ -23,10 +25,6 @@
 .host-detail {
   width: 100%;
   text-align: left;
-}
-
-.overlay-common {
-  top: 200px;
 }
 
 .overlay-common {
@@ -43,11 +41,21 @@
   flex-direction: row;
   justify-content: space-between;
 }
+
+.login-required {
+  margin-top: 200px;
+  margin-bottom: 30px;
+}
+
 .confirm-button {
   float: right;
 }
 
-.popup > span > div  {
+.initial-spinner {
+  margin-top: 300px;
+}
+
+.popup > span > div {
   z-index: 22;
 }
 
@@ -55,12 +63,12 @@ td.converge-col {
   text-align: center !important;
 }
 
-.overlay-common.pt-overlay-enter, .overlay-common.pt-overlay-appear {
+.docs-overlay-example-transition.pt-overlay-enter, .docs-overlay-example-transition.pt-overlay-appear {
   -webkit-transform: translateY(-50vh) rotate(-10deg);
   transform: translateY(-50vh) rotate(-10deg);
 }
 
-.overlay-common.pt-overlay-enter-active, .overlay-common.pt-overlay-appear-active {
+.docs-overlay-example-transition.pt-overlay-enter-active, .docs-overlay-example-transition.pt-overlay-appear-active {
   -webkit-transform: translateY(0) rotate(0deg);
   transform: translateY(0) rotate(0deg);
   transition-property: -webkit-transform;
@@ -71,12 +79,12 @@ td.converge-col {
   transition-delay: 0;
 }
 
-.overlay-common.pt-overlay-leave {
+.docs-overlay-example-transition.pt-overlay-leave {
   -webkit-transform: translateY(0) rotate(0deg);
   transform: translateY(0) rotate(0deg);
 }
 
-.overlay-common.pt-overlay-leave-active {
+.docs-overlay-example-transition.pt-overlay-leave-active {
   -webkit-transform: translateY(150vh) rotate(-20deg);
   transform: translateY(150vh) rotate(-20deg);
   transition-property: -webkit-transform;

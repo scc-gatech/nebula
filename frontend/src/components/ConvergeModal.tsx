@@ -25,8 +25,8 @@ export class ConvergeModal extends React.Component<{}, {}> {
     const overlayClasses = classNames(
       Classes.CARD,
       Classes.ELEVATION_4,
-      Classes.OVERLAY_CONTENT,
       'overlay-common',
+      'docs-overlay-example-transition'
     );
     const targetHost = appState.convergeModal.targetHost;
     if (!targetHost) {
@@ -34,6 +34,7 @@ export class ConvergeModal extends React.Component<{}, {}> {
     }
     return (
       <Overlay
+        className={Classes.OVERLAY_SCROLL_CONTAINER}
         isOpen={appState.convergeModal.open}
         onClose={this.closeModal}
         canOutsideClickClose={true}

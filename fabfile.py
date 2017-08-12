@@ -38,8 +38,35 @@ def set_chef_status(status: str):
 
 
 @task
+def get_chef_role():
+    return read_remote_file(f"{CHEF_DIR}/role").strip()
+
+
+@task
+def get_chef_branch():
+    return read_remote_file(f"{CHEF_DIR}/branch").strip()
+
+
+@task
 def get_chef_status():
     return read_remote_file(f"{CHEF_DIR}/status").strip()
+
+
+@task
+def get_chef_sha():
+    with cd(CHEF_DIR):
+        output = sudo("git rev-parse HEAD")
+    return output.strip()
+
+
+@task
+def get_machine_info():
+    return {
+        "chefBranch": get_chef_branch(),
+        "chefStatus": get_chef_status(),
+        "chefSha": get_chef_sha(),
+        "chefRole": get_chef_role()
+    }
 
 
 @task

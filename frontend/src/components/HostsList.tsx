@@ -38,10 +38,11 @@ class HostRow extends React.PureComponent<{ host: HostInfo }, {}> {
         onClick={this.viewHostDetail}
       >
         <td>{host.hostname}</td>
-        <td>{host.role}</td>
+        <td>{host.chefRole}</td>
         <td>{host.chefBranch}</td>
         <td>{host.chefSha ? host.chefSha.slice(0, 6) : 'uninitialized'}</td>
         <td>{moment(host.lastConverged).format('MMMM Do YYYY, h:mm:ss a')}</td>
+        <td>{host.chefStatus}</td>
         <td className="converge-col"><Button iconName="git-merge" onClick={this.convergeHost}/></td>
       </tr>
     );
@@ -59,6 +60,7 @@ export class HostTable extends React.Component<{ hosts: Array<HostInfo> }, {}> {
           <th>Chef Branch</th>
           <th>Chef SHA</th>
           <th>Last Converged</th>
+          <th>Status</th>
           <th>Converge</th>
         </tr>
         </thead>
