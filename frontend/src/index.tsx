@@ -29,7 +29,7 @@ class App extends React.Component<{}, { hasUser: boolean, userInfoFetched: boole
     super();
     this.state = {
       userInfoFetched: false,
-      hasUser: false,
+      hasUser: false
     };
   }
 

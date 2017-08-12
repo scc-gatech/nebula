@@ -14,7 +14,7 @@ import {
 import { object } from 'prop-types';
 import Lodable from 'react-loadable';
 import { Navbar } from './components/Navbar';
-import { Redirect, RouteComponentProps, RouterChildContext } from 'react-router';
+import { RouteComponentProps, RouterChildContext } from 'react-router';
 import { PageLoadingComponent } from './components/PageLoadingComponent';
 import { ConvergeModal } from './components/ConvergeModal';
 import { observer } from 'mobx-react';
@@ -94,7 +94,11 @@ export class MainApp extends React.Component<{}, {}> {
             <button className="pt-button pt-minimal pt-icon-notifications"/>
             <button className="pt-button pt-minimal pt-icon-cog"/>
           </Navbar>
-          <Redirect from="/" to="/hosts"/>
+          <Route
+            exact={true}
+            path="/"
+            render={() => <TabsDispatch selected={'hosts'}/>}
+          />
           <Route
             path="/:tabId"
             render={
