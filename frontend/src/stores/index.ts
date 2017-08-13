@@ -7,7 +7,15 @@ class ConvergeModalState {
   @observable targetBranch?: string;
 }
 
+class AuthState {
+  @observable authStateFetched: boolean = false;
+  @observable authenticated: boolean = false;
+  @observable authToken?: string;
+}
+
 class AppState {
+
+  @observable auth = new AuthState();
   @observable convergeModal = new ConvergeModalState();
 }
 

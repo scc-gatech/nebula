@@ -7,6 +7,10 @@ import './App.css';
 import { PageLoadingComponent } from './components/PageLoadingComponent';
 import { Button, Classes, NonIdealState, Spinner } from '@blueprintjs/core';
 import Lodable from 'react-loadable';
+import { observer } from 'mobx-react';
+import { runInAction } from 'mobx';
+import { appState } from './stores/index';
+import { API } from './api';
 
 const config = {
   apiKey: 'AIzaSyAllrgyA84f4uqeN23GiXukrwP7B6w37dU',
@@ -14,7 +18,7 @@ const config = {
   databaseURL: 'https://sc17-gatech-optica.firebaseio.com',
   projectId: 'sc17-gatech-optica',
   storageBucket: 'sc17-gatech-optica.appspot.com',
-  messagingSenderId: '772306227863'
+  messagingSenderId: '772306227863',
 };
 firebase.initializeApp(config);
 
@@ -23,35 +27,56 @@ const AsyncMain = Lodable({
   loading: PageLoadingComponent,
 });
 
-class App extends React.Component<{}, { hasUser: boolean, userInfoFetched: boolean }> {
+interface AuthResponse {
+  authorized: boolean;
+}
+
+@observer
+class App extends React.Component<{}, {}> {
 
   constructor() {
     super();
-    this.state = {
-      userInfoFetched: false,
-      hasUser: false
-    };
   }
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        this.setState({userInfoFetched: true, hasUser: true});
+        firebase.auth().currentUser!.getIdToken(true).then((idToken) => {
+          API.post('/auth', {
+            auth_data: idToken,
+          })
+            .then((it: AuthResponse) => {
+                if (it.authorized) {
+                  runInAction('has user info; user is logged in', () => {
+                    appState.auth.authStateFetched = true;
+                    appState.auth.authenticated = true;
+                    appState.auth.authToken = idToken;
+                  });
+                } else {
+                  firebase.auth().signOut();
+                }
+              },
+            );
+
+        });
       } else {
-        this.setState({userInfoFetched: true, hasUser: false});
+        runInAction('has user info; user is not logged in', () => {
+          appState.auth.authStateFetched = true;
+          appState.auth.authenticated = false;
+        });
       }
     });
   }
 
   render() {
-    if (!this.state.userInfoFetched) {
+    if (!appState.auth.authStateFetched) {
       return (
         <div className="App">
           <Spinner className="initial-spinner"/>
         </div>
       );
     }
-    if (!this.state.hasUser) {
+    if (!appState.auth.authenticated) {
       return (
         <div className="App">
           <NonIdealState
@@ -79,12 +104,12 @@ class App extends React.Component<{}, { hasUser: boolean, userInfoFetched: boole
         </div>
       );
     }
-    return <AsyncMain />;
+    return <AsyncMain/>;
   }
 }
 
 ReactDOM.render(
   <App/>,
-  document.getElementById('root') as HTMLElement
+  document.getElementById('root') as HTMLElement,
 );
 registerServiceWorker();
