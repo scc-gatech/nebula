@@ -34,3 +34,5 @@ export const API = {
   put: api.bind(null, 'put'),
   delete: api.bind(null, 'delete'),
 };
+
+window['api'] = API;

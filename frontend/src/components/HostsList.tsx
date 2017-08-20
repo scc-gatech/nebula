@@ -41,7 +41,7 @@ class HostRow extends React.PureComponent<{ host: HostInfo }, {}> {
         <td>{host.chefRole}</td>
         <td>{host.chefBranch}</td>
         <td>{host.chefSha ? host.chefSha.slice(0, 6) : 'uninitialized'}</td>
-        <td>{moment(host.lastConverged).format('MMMM Do YYYY, h:mm:ss a')}</td>
+        <td>{host.lastConverged ? moment(host.lastConverged).format('MMMM Do YYYY, h:mm:ss a') : 'uninitialized'}</td>
         <td>{host.chefStatus}</td>
         <td className="converge-col"><Button iconName="git-merge" onClick={this.convergeHost}/></td>
       </tr>
@@ -84,7 +84,7 @@ export class HostsList extends React.Component<{}, { hosts: Array<HostInfo> }> {
     this.ref = firebase.database().ref('hosts');
     this.ref.on('value', (snap: DataSnapshot) => {
       this.setState({
-        hosts: Object.values(snap.val())
+        hosts: Object.values(snap.val()),
       });
     });
   }
