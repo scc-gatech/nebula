@@ -1,8 +1,10 @@
 from fabric.api import run, sudo, cd, env, task, get
 from io import BytesIO
+import requests
 
 CHEF_DIR = "/etc/chef"
 
+env.roledefs = requests.get('https://sc17-gatech-optica.firebaseio.com/roles.json').json()
 
 @task
 def read_remote_file(file_path: str):
