@@ -22,7 +22,7 @@ Note:
 
 
 ### Converge
-`fab converge [-h {hosts}]`
+`fab converge [-H {hosts}] [-R {role_name}]`
 
 ### Change branch/role
-`fab set_chef_{branch,role}:{value} [-h {hosts}]`
+`fab set_chef_{branch,role}:{value} [-H {hosts}]`
