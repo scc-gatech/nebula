@@ -12,7 +12,7 @@ Service to manage bootstrap and convergence of hosts.
  - `pip install fabric3`
 
 ### Bootstrap
-`fab init_chef_zero:https://{username}:{token}@github.com/scc-gatech/chef.git -u {ubuntu,cyclecloud} -h {comma_separated_list}`
+`fab init_chef_zero:https://{username}:{token}@github.com/scc-gatech/chef.git -u {ubuntu,cyclecloud} -H {comma_separated_list} -R {role_name}`
 
 Note:
  - `username`: GitHub username
@@ -22,7 +22,7 @@ Note:
 
 
 ### Converge
-`fab converge [-h {hosts}]`
+`fab converge [-H {hosts}] [-R {role_name}]`
 
 ### Change branch/role
-`fab set_chef_{branch,role}:{value} [-h {hosts}]`
+`fab set_chef_{branch,role}:{value} [-H {hosts}]`
