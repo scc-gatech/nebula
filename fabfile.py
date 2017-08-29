@@ -141,6 +141,7 @@ def converge():
 
 
 @task
+@notify
 def init_chef_zero(chef_repo_uri: str, role: str="base", branch: str="master"):
     install_chef()
     clone_chef_repo(chef_repo_uri)
