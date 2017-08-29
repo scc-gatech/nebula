@@ -1,10 +1,65 @@
-from fabric.api import run, sudo, cd, env, task, get
+from fabric.api import run, sudo, cd, env, task, get, settings
 from io import BytesIO
 import requests
+import os
+from os.path import join, dirname, isfile
+from dotenv import load_dotenv
+import getpass
+
+USER = getpass.getuser()
+
+dotenv_path = join(dirname(__file__), '.env')
+
+if isfile(dotenv_path):
+    load_dotenv(dotenv_path)
+
+SHOULD_SLACK = bool(os.getenv('ENABLE_SLACK_NOTIFICATION'))
+SLACK_NOTIFY_CHANNEL = '#infra'
+
+if SHOULD_SLACK:
+    from slacker import Slacker
+    slack = Slacker(os.getenv('SLACK_TOKEN'))
 
 CHEF_DIR = "/etc/chef"
 
-env.roledefs = requests.get('https://sc17-gatech-optica.firebaseio.com/roles.json').json()
+env.roledefs = requests.get(
+    'https://sc17-gatech-optica.firebaseio.com/roles.json').json()
+
+
+class FabricException(Exception):
+    pass
+
+
+def notify(func):
+
+    def wrapped(*args, **kwargs):
+        if SHOULD_SLACK:
+            slack.chat.post_message(
+                SLACK_NOTIFY_CHANNEL,
+                f"@{USER} started a task: `{func.__name__}` on host(s): `{env.all_hosts}`.\n"
+                f"@{USER}: please don't step away!"
+            )
+            ret = None
+            with settings(abort_exception=FabricException):
+                try:
+                    ret = func(*args, **kwargs)
+                except Exception as e:
+                    slack.chat.post_message(
+                        SLACK_NOTIFY_CHANNEL,
+                        f":siren: @{USER}'s task `{func.__name__}` failed! :cry: Please investigate."
+                    )
+                    raise e
+                slack.chat.post_message(
+                    SLACK_NOTIFY_CHANNEL,
+                    f":white_check_mark: @{USER}'s task `{func.__name__}` succeeded."
+                )
+            return ret
+        else:
+            return func(*args, **kwargs)
+
+    wrapped.__name__ = func.__name__
+    return wrapped
+
 
 @task
 def read_remote_file(file_path: str):
@@ -72,19 +127,21 @@ def get_machine_info():
 
 
 @task
+@notify
 def converge():
     with cd(CHEF_DIR):
-        status = get_chef_status()
         set_chef_status("converging")
         sudo("git fetch --all")
         sudo(f"git checkout $(head -n 1 {CHEF_DIR}/branch)")
         sudo("git pull")
-        sudo(f"chef-client -z -r \"role[$(head -n 1 {CHEF_DIR}/role)]\" -c {CHEF_DIR}/client.rb")
-        set_chef_status(status)
+        sudo(
+            f"chef-client -z -r \"role[$(head -n 1 {CHEF_DIR}/role)]\" -c {CHEF_DIR}/client.rb"
+        )
+        set_chef_status("ready")
 
 
 @task
-def init_chef_zero(chef_repo_uri: str, role: str = "base", branch: str = "master"):
+def init_chef_zero(chef_repo_uri: str, role: str="base", branch: str="master"):
     install_chef()
     clone_chef_repo(chef_repo_uri)
     set_chef_status("cloned")
