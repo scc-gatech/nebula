@@ -13,8 +13,8 @@ dotenv_path = join(dirname(__file__), '.env')
 if isfile(dotenv_path):
     load_dotenv(dotenv_path)
 
-SHOULD_SLACK = bool(os.getenv('ENABLE_SLACK_NOTIFICATION'))
-SLACK_NOTIFY_CHANNEL = '#infra'
+SHOULD_SLACK = os.getenv('ENABLE_SLACK_NOTIFICATION') == 'True'
+SLACK_NOTIFY_CHANNEL = '#nebula-dev'
 
 if SHOULD_SLACK:
     from slacker import Slacker
@@ -46,7 +46,9 @@ def notify(func):
                 except Exception as e:
                     slack.chat.post_message(
                         SLACK_NOTIFY_CHANNEL,
-                        f":siren: @{USER}'s task `{func.__name__}` failed! :cry: Please investigate."
+                        f":siren: @{USER}'s task `{func.__name__}` failed! :cry: Please investigate.\n"
+                        f"Detailed error:\n"
+                        f"```{str(e)}```"
                     )
                     raise e
                 slack.chat.post_message(
