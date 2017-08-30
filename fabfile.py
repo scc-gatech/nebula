@@ -1,10 +1,11 @@
-from fabric.api import run, sudo, cd, env, task, get, settings
-from io import BytesIO
-import requests
-import os
-from os.path import join, dirname, isfile
-from dotenv import load_dotenv
 import getpass
+import os
+from io import BytesIO
+from os.path import join, dirname, isfile
+
+import requests
+from dotenv import load_dotenv
+from fabric.api import sudo, cd, env, task, get, settings
 
 USER = getpass.getuser()
 
@@ -14,10 +15,11 @@ if isfile(dotenv_path):
     load_dotenv(dotenv_path)
 
 SHOULD_SLACK = os.getenv('ENABLE_SLACK_NOTIFICATION') == 'True'
-SLACK_NOTIFY_CHANNEL = '#nebula-dev'
+SLACK_NOTIFY_CHANNEL = '#infra'
 
 if SHOULD_SLACK:
     from slacker import Slacker
+
     slack = Slacker(os.getenv('SLACK_TOKEN'))
 
 CHEF_DIR = "/etc/chef"
@@ -31,7 +33,6 @@ class FabricException(Exception):
 
 
 def notify(func):
-
     def wrapped(*args, **kwargs):
         if SHOULD_SLACK:
             slack.chat.post_message(
@@ -46,7 +47,8 @@ def notify(func):
                 except Exception as e:
                     slack.chat.post_message(
                         SLACK_NOTIFY_CHANNEL,
-                        f":siren: @{USER}'s task `{func.__name__}` failed! :cry: Please investigate.\n"
+                        f":siren: @{USER}'s task `{func.__name__}` failed!"
+                        " :cry: Please investigate.\n"
                         f"Detailed error:\n"
                         f"```{str(e)}```"
                     )
@@ -144,7 +146,7 @@ def converge():
 
 @task
 @notify
-def init_chef_zero(chef_repo_uri: str, role: str="base", branch: str="master"):
+def init_chef_zero(chef_repo_uri: str, role: str = "base", branch: str = "master"):
     install_chef()
     clone_chef_repo(chef_repo_uri)
     set_chef_status("cloned")
