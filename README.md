@@ -1,9 +1,6 @@
 # nebula
 Service to manage bootstrap and convergence of hosts.
 
-## Web UI
-... work in progress
-
 ## CLI Usage
 
 ### Install Packages
