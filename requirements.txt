@@ -62,6 +62,6 @@ urllib3==1.24.2
 vine==1.1.4
 virtualenv==15.1.0
 wcwidth==0.1.7
-Werkzeug==0.12.2
+Werkzeug==0.15.3
 WTForms==2.1
 yapf==0.17.0
